@@ -11,7 +11,7 @@
 #include <sys/param.h>
 #include <sched.h>
 
-#define K 200 // genreate a data node for K times in each thread
+#define K 400 // genreate a data node for K times in each thread
 
 struct Node
 {
@@ -61,36 +61,47 @@ void * producer_thread( void *arg)
     struct Node * ptr, tmp;
     int counter = 0;  
 
-    /* generate and attach K nodes to the global list */
+    struct Node *start = NULL;
+    struct Node *end = NULL;
+
+    /* generate and attach K nodes to a local list first*/
     while( counter  < K )
     {
         ptr = generate_data_node();
 
         if( NULL != ptr )
         {
-            while(1)
+                
+             ptr->data  = 1;//generate data
+		 
+            if( start == NULL )
             {
-		/* access the critical region and add a node to the global list */
-                if( !pthread_mutex_trylock(&mutex_lock) )
-                {
-                    ptr->data  = 1;//generate data
-		    /* attache the generated node to the global list */
-                    if( List->header == NULL )
-                    {
-                        List->header = List->tail = ptr;
-                    }
-                    else
-                    {
-                        List->tail->next = ptr;
-                        List->tail = ptr;
-                    }                    
-                    pthread_mutex_unlock(&mutex_lock);
-                    break;
-                }
-            }           
+                start = ptr;
+                end = ptr;
+            }
+             else
+            {
+                end->next = ptr;
+                end = ptr;
+            }                    
+             ++counter;      
         }
-        ++counter;
+       
     }
+    //Once all characters in local list, then get lock and add to list. 
+    pthread_mutex_lock(&mutex_lock);
+
+    if( List->header == NULL )
+    {
+        List->header = List->tail = start;
+    }
+    else
+    {
+        List->tail->next = start;
+        List->tail = end;
+    }                    
+    pthread_mutex_unlock(&mutex_lock);
+    pthread_exit(NULL);
 }
 
 int main(int argc, char* argv[])
