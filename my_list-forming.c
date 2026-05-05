@@ -58,7 +58,7 @@ void * producer_thread( void *arg)
 {
     //bind_thread_to_cpu(*((int*)arg));//bind this thread to a CPU
 
-    struct Node * ptr, tmp;
+    struct Node *ptr, tmp;
     int counter = 0;  
 
     struct Node *start = NULL;
@@ -72,21 +72,20 @@ void * producer_thread( void *arg)
         if( NULL != ptr )
         {
                 
-             ptr->data  = 1;//generate data
+            ptr->data  = 1;//generate data
 		 
             if( start == NULL )
             {
                 start = ptr;
                 end = ptr;
             }
-             else
+            else
             {
                 end->next = ptr;
                 end = ptr;
             }                    
              ++counter;      
-        }
-       
+        }   
     }
     //Once all characters in local list, then get lock and add to list. 
     pthread_mutex_lock(&mutex_lock);
@@ -102,6 +101,7 @@ void * producer_thread( void *arg)
     }                    
     pthread_mutex_unlock(&mutex_lock);
     pthread_exit(NULL);
+    return NULL;
 }
 
 int main(int argc, char* argv[])
