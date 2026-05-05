@@ -11,7 +11,7 @@
 #include <sys/param.h>
 #include <sched.h>
 
-#define K 200 // genreate a data node for K times in each thread
+#define K 400 // genreate a data node for K times in each thread
 
 struct Node
 {
