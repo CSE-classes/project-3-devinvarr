@@ -56,7 +56,7 @@ struct Node* generate_data_node()
 
 void * producer_thread( void *arg)
 {
-    bind_thread_to_cpu(*((int*)arg));//bind this thread to a CPU
+    //bind_thread_to_cpu(*((int*)arg));//bind this thread to a CPU
 
     struct Node * ptr, tmp;
     int counter = 0;  
